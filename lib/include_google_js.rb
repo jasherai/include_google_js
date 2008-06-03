@@ -9,8 +9,8 @@ module IncludeGoogleJs
   IncludeGoogleJs::Config.include_google_js ||= true
   
   def self.included(base) 
-    base.alias_method_chain :javascript_include_tag, :google_js
-    base.alias_method_chain :expand_javascript_sources, :google_js
+    alias_method_chain :javascript_include_tag, :google_js
+    alias_method_chain :expand_javascript_sources, :google_js
   end
   
   def javascript_include_tag_with_google_js(*sources)
