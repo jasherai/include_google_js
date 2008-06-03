@@ -5,6 +5,8 @@ IncludeGoogleJs will over ride javascript_include_tag to use Prototype and Scrip
 Google instead of the local copy, as described at 
 http://ajaxian.com/archives/announcing-ajax-libraries-api-speed-up-your-ajax-apps-with-googles-infrastructure
 
+Only works in Rails 2.1 so far, will look in to getting it running on older versions soon.
+
 Thanks to Brian Hogan and Jose Fernandez for their help as I put together my first plugin.
 
 
