@@ -1,6 +1,7 @@
 module IncludeGoogleJs
   
   @@javascript_expansions = { :defaults => ActionView::Helpers::AssetTagHelper::JAVASCRIPT_DEFAULT_SOURCES.dup }
+  @@include_google_js = false
   
   def self.included(base) 
     base.alias_method_chain :javascript_include_tag, :google_js
@@ -8,9 +9,9 @@ module IncludeGoogleJs
   end
   
   def javascript_include_tag_with_google_js(*sources)
-    options             = sources.extract_options!.stringify_keys
-    cache               = options.delete("cache")
-    @include_google_js = options.delete("include_google_js")
+    options               = sources.extract_options!.stringify_keys
+    cache                 = options.delete("cache")
+    @@include_google_js     = options.delete("include_google_js")
 
     if ActionController::Base.perform_caching && cache
       joined_javascript_name = (cache == true ? "all" : cache) + ".js"
@@ -27,7 +28,7 @@ module IncludeGoogleJs
           google.load("scriptaculous", "1");
         </script>
         #{html}
-        } if @include_google_js && (sources.include?(:defaults) || sources.include?(:all))
+        } if @@include_google_js && (sources.include?(:defaults) || sources.include?(:all))
         return html
     end
   end
@@ -35,7 +36,7 @@ module IncludeGoogleJs
   def expand_javascript_sources_with_google_js(sources)
     if sources.include?(:all)
       all_javascript_files = Dir[File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, '*.js')].collect { |file| File.basename(file).gsub(/\.\w+$/, '') }.sort
-      if @include_google_js
+      if @@include_google_js
         ActionView::Helpers::AssetTagHelper::JAVASCRIPT_DEFAULT_SOURCES.each do |file|
           all_javascript_files.delete(file)
         end
@@ -45,7 +46,7 @@ module IncludeGoogleJs
       expanded_sources = []
       expanded_sources = sources.collect do |source|
         determine_source(source, @@javascript_expansions)
-      end.flatten unless @include_google_js && sources.include?(:defaults)
+      end.flatten unless @@include_google_js && sources.include?(:defaults)
       expanded_sources << "application" if sources.include?(:defaults) && file_exist?(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "application.js"))
       expanded_sources
     end
