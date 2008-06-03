@@ -1,13 +1,19 @@
 IncludeGoogleJs
 ===============
 
-Introduction goes here.
+IncludeGoogleJs will over ride javascript_include_tag to use Prototype and Script.aculo.us from Google instead of the local copy, as described at http://ajaxian.com/archives/announcing-ajax-libraries-api-speed-up-your-ajax-apps-with-googles-infrastructure
+
+Thanks to Brian Hogan and Jose Fernandez for their help as I put together my first plugin.
 
 
 Example
 =======
 
-Example goes here.
+in config/environment.rb or any individual environment file
+
+IncludeGoogleJs::Config.include_google_js = true
+
+will use Google's copy instead of the local copy.
 
 
-Copyright (c) 2008 [name of plugin creator], released under the MIT license
+Copyright (c) 2008 Christopher Warren, released under the MIT license
