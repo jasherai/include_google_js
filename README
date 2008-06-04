@@ -7,13 +7,13 @@ http://ajaxian.com/archives/announcing-ajax-libraries-api-speed-up-your-ajax-app
 
 Only works in Rails 2.1 so far, will look in to getting it running on older versions soon.
 
-To install from git, run
-
-ruby script/plugin install git://github.com/chriswarren/include_google_js.git
-
-at the command line.
-
 Thanks to Brian Hogan and Jose Fernandez for their help as I put together my first plugin.
+
+Installation
+=======
+
+From git:
+ruby script/plugin install git://github.com/chriswarren/include_google_js.git
 
 
 Example
