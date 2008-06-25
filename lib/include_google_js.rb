@@ -15,7 +15,7 @@ module IncludeGoogleJs
   def javascript_include_tag_with_google_js(*sources)
     options                 = sources.extract_options!.stringify_keys
     cache                   = options.delete("cache")
-    @@include_google_js     = options.delete("include_google_js")
+    @@include_google_js     = options.delete("include_google_js") if options.include?("include_google_js")
     @@google_js_to_include  = []
 
     if ActionController::Base.perform_caching && cache
@@ -51,14 +51,15 @@ module IncludeGoogleJs
       all_javascript_files = IncludeGoogleJs.determine_if_google_hosts_files(all_javascript_files) if @@include_google_js
       @@all_javascript_sources ||= ((determine_source(:defaults, @@javascript_expansions).dup & all_javascript_files) + all_javascript_files).uniq
     else
+      defaults = sources.include?(:defaults)
       expanded_sources = []
-      if @@include_google_js
-        sources = IncludeGoogleJs.default_sources if sources.include?(:defaults) && @@include_google_js
-        expanded_sources = sources.collect do |source|
-          determine_source(source, @@javascript_expansions)
-        end.flatten
-        expanded_sources = IncludeGoogleJs.determine_if_google_hosts_files(expanded_sources) if @@include_google_js
-      end
+      expanded_sources += IncludeGoogleJs.default_sources if sources.include?(:defaults) && @@include_google_js
+      expanded_sources += sources.collect do |source|
+        determine_source(source, @@javascript_expansions)
+      end.flatten
+      expanded_sources = IncludeGoogleJs.determine_if_google_hosts_files(expanded_sources) if @@include_google_js
+      expanded_sources << "application" if File.exist?(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "application.js")) && defaults
+      return expanded_sources
     end
   end
   
@@ -81,13 +82,14 @@ module IncludeGoogleJs
     @@scriptaculous_files.each do |file|
       javascript_files.delete(file)
     end
+    # Sort the Google files to make sure Prototype is loaded before Scriptaculous
+    @@google_js_to_include.sort!
     return javascript_files
   end
   
   def self.default_sources
     sources = []
     sources += @@default_google_js_libs
-    sources << "application" if File.exist?(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "application.js"))
     return sources
   end
 end
