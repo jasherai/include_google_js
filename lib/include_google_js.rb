@@ -19,9 +19,6 @@ module IncludeGoogleJs
     @@include_google_js     = options.delete("include_google_js") if options.include?("include_google_js") && IncludeGoogleJs.ping
     @@google_js_to_include  = []
 
-    uri = URI.parse("http://ajax.googleapis.com/")
-    http = Net::HTTP.new(uri.host, uri.port)
-
     if ActionController::Base.perform_caching && cache
       joined_javascript_name = (cache == true ? "all" : cache) + ".js"
       joined_javascript_path = File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, joined_javascript_name)
