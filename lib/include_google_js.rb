@@ -16,7 +16,7 @@ module IncludeGoogleJs
   def javascript_include_tag_with_google_js(*sources)
     options                 = sources.extract_options!.stringify_keys
     cache                   = options.delete("cache")
-    @@include_google_js     = options.delete("include_google_js") if options.include?("include_google_js") && IncludeGoogleJs.ping
+    @@include_google_js     = options.delete("include_google_js") if options.include?("include_google_js") && IncludeGoogleJs.confirm_internet_connection
     @@google_js_to_include  = []
 
     if ActionController::Base.perform_caching && cache
@@ -94,7 +94,7 @@ module IncludeGoogleJs
     return sources
   end
   
-  def self.ping(url="ajax.googleapis.com")    
+  def self.confirm_internet_connection(url="ajax.googleapis.com")    
     Ping.pingecho(url,5,80) # --> true or false  
   end
 end
