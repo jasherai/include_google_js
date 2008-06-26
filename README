@@ -1,9 +1,14 @@
 IncludeGoogleJs
 ===============
 
-IncludeGoogleJs will over ride javascript_include_tag to use Prototype and Script.aculo.us from 
-Google instead of the local copy, as described at 
+IncludeGoogleJs will over ride javascript_include_tag to use Google's hosted Javascript libraries instead of the local copies, as explained at 
 http://ajaxian.com/archives/announcing-ajax-libraries-api-speed-up-your-ajax-apps-with-googles-infrastructure
+
+:defaults will load Prototype and Scriptaculous
+:all will load all JS files, looking to see if any of the files matches the name of any Google hosted file.
+named files will load, again looking to see if any of the files matches the name of any Google hosted file.
+
+Checks for a working connection to ajax.googleapis.com before switching over.
 
 Only works in Rails 2.1 so far, will look in to getting it running on older versions soon.
 
