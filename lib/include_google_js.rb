@@ -1,4 +1,5 @@
 module IncludeGoogleJs
+  require 'ping'
   
   @@javascript_expansions = { :defaults => ActionView::Helpers::AssetTagHelper::JAVASCRIPT_DEFAULT_SOURCES.dup }
   @@include_google_js = false
@@ -15,8 +16,11 @@ module IncludeGoogleJs
   def javascript_include_tag_with_google_js(*sources)
     options                 = sources.extract_options!.stringify_keys
     cache                   = options.delete("cache")
-    @@include_google_js     = options.delete("include_google_js") if options.include?("include_google_js")
+    @@include_google_js     = options.delete("include_google_js") if options.include?("include_google_js") && IncludeGoogleJs.ping
     @@google_js_to_include  = []
+
+    uri = URI.parse("http://ajax.googleapis.com/")
+    http = Net::HTTP.new(uri.host, uri.port)
 
     if ActionController::Base.perform_caching && cache
       joined_javascript_name = (cache == true ? "all" : cache) + ".js"
@@ -91,5 +95,9 @@ module IncludeGoogleJs
     sources = []
     sources += @@default_google_js_libs
     return sources
+  end
+  
+  def self.ping(url="ajax.googleapis.com")    
+    Ping.pingecho(url,5,80) # --> true or false  
   end
 end
