@@ -3,6 +3,8 @@ IncludeGoogleJs
 
 IncludeGoogleJs will over ride javascript_include_tag to use Google's hosted Javascript libraries instead of the local copies, as explained at 
 http://ajaxian.com/archives/announcing-ajax-libraries-api-speed-up-your-ajax-apps-with-googles-infrastructure
+and announced at
+http://googleajaxsearchapi.blogspot.com/2008/05/speed-up-access-to-your-favorite.html
 
 :defaults will load Prototype and Scriptaculous
 :all will load all JS files, looking to see if any of the files matches the name of any Google hosted file.
