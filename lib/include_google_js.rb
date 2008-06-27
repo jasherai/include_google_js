@@ -70,6 +70,7 @@ module IncludeGoogleJs
     javascript_files.each do |file|
       if @@google_js_libs.include?(file)
         @@google_js_to_include << file
+        IncludeGoogleJs.get_file_version(file)
       end
       if @@scriptaculous_files.include?(file)
         @@google_js_to_include << 'scriptaculous' unless @@google_js_to_include.include?('scriptaculous')
@@ -96,5 +97,38 @@ module IncludeGoogleJs
   
   def self.confirm_internet_connection(url="ajax.googleapis.com")    
     Ping.pingecho(url,5,80) # --> true or false  
+  end
+  
+  def self.get_file_version(file)
+    version = ''
+    case file
+      when "prototype"
+        File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
+          if line.include?("Version")
+            version = line.match(/[\d.]+/)[0]
+            break
+          end
+        end
+      when "scriptaculous"
+        version = "1"
+      when "jquery"
+        version = "1"
+      when "mootools"
+        version = "1"
+      when "dojo"
+        File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
+          match = line.scan(/\b[major|minor|patch]{5}:([\d]+)/)
+          if match.size > 0
+            version = match.shift.to_s
+            match.each do |m|
+              version += "."+m.to_s
+            end
+            break
+          end
+        end
+      else
+        version = "1"
+    end
+    return version
   end
 end
