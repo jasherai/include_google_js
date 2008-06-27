@@ -54,10 +54,13 @@ module IncludeGoogleJs
     else
       defaults = sources.include?(:defaults)
       expanded_sources = []
-      expanded_sources += IncludeGoogleJs.default_sources if sources.include?(:defaults) && @@include_google_js
-      expanded_sources += sources.collect do |source|
-        determine_source(source, @@javascript_expansions)
-      end.flatten
+      if defaults && @@include_google_js
+        expanded_sources += IncludeGoogleJs.default_sources 
+      else
+        expanded_sources += sources.collect do |source|
+          determine_source(source, @@javascript_expansions)
+        end.flatten
+      end
       expanded_sources = IncludeGoogleJs.determine_if_google_hosts_files(expanded_sources) if @@include_google_js
       expanded_sources << "application" if File.exist?(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "application.js")) && defaults
       return expanded_sources
@@ -68,7 +71,7 @@ module IncludeGoogleJs
   def self.determine_if_google_hosts_files(javascript_files)
     @@google_js_to_include = []
     javascript_files.each do |file|
-      if @@google_js_libs.include?(file)
+      if @@google_js_libs.include?(file.split("-")[0])
         @@google_js_to_include << file
         IncludeGoogleJs.get_file_version(file)
       end
@@ -99,8 +102,10 @@ module IncludeGoogleJs
     Ping.pingecho(url,5,80) # --> true or false  
   end
   
-  def self.get_file_version(file)
+  def self.get_file_version(file_name)
     version = ''
+    # split file_name for jquery
+    file = file_name.split("-")[0]
     case file
       when "prototype"
         File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
@@ -113,7 +118,8 @@ module IncludeGoogleJs
         version = "1"
       when "jquery"
         version_array = []
-        File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}-1.2.6.js")).each do |line|
+        file_version = "-"+file_name.split("-")[1]
+        File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file+file_version}.js")).each do |line|
           version_array = line.scan(/jquery:\W?"([\d.]+)"/x)
           break if version_array.size > 0
         end
