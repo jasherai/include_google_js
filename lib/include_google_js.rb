@@ -112,12 +112,17 @@ module IncludeGoogleJs
       when "scriptaculous"
         version = "1"
       when "jquery"
-        version = "1"
+        version_array = []
+        File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}-1.2.6.js")).each do |line|
+          version_array = line.scan(/jquery:\W?"([\d.]+)"/x)
+          break if version_array.size > 0
+        end
+        version = version_array.first.to_s
       when "mootools"
         version = "1"
       when "dojo"
         File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
-          match = line.scan(/\b[major|minor|patch]{5}:([\d]+)/)
+          match = line.scan(/\b[major|minor|patch]{5}:([\d]+)/x)
           if match.size > 0
             version = match.shift.to_s
             match.each do |m|
