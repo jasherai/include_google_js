@@ -103,42 +103,51 @@ module IncludeGoogleJs
   end
   
   def self.get_file_version(file_name)
-    version = ''
-    # split file_name for jquery
-    file = file_name.split("-")[0]
-    case file
-      when "prototype"
-        File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
-          if line.include?("Version")
-            version = line.match(/[\d.]+/)[0]
-            break
-          end
-        end
-      when "scriptaculous"
-        version = "1"
-      when "jquery"
-        version_array = []
-        file_version = "-"+file_name.split("-")[1]
-        File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file+file_version}.js")).each do |line|
-          version_array = line.scan(/jquery:\W?"([\d.]+)"/x)
-          break if version_array.size > 0
-        end
-        version = version_array.first.to_s
-      when "mootools"
-        version = "1"
-      when "dojo"
-        File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
-          match = line.scan(/\b[major|minor|patch]{5}:([\d]+)/x)
-          if match.size > 0
-            version = match.shift.to_s
-            match.each do |m|
-              version += "."+m.to_s
+    if File.exist?(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file_name}.js"))
+      version = ''
+      # split file_name for jquery
+      file = file_name.split("-")[0]
+      case file
+        when "prototype"
+          File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
+            if line.include?("Version")
+              version = line.match(/[\d.]+/)[0]
+              break
             end
-            break
           end
-        end
-      else
-        version = "1"
+        when "scriptaculous"
+          version = "1"
+        when "jquery"
+          version_array = []
+          file_version = "-"+file_name.split("-")[1]
+          File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file+file_version}.js")).each do |line|
+            version_array = line.scan(/jquery:\W?"([\d.]+)"/x)
+            break if version_array.size > 0
+          end
+          version = version_array.first.to_s
+        when "mootools"
+          File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
+            if line.include?("version")
+              version = line.match(/version':\W?'([\d.]+)'/)[1]
+              break
+            end
+          end
+        when "dojo"
+          File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file}.js")).each do |line|
+            match = line.scan(/\b[major|minor|patch]{5}:([\d]+)/x)
+            if match.size > 0
+              version = match.shift.to_s
+              match.each do |m|
+                version += "."+m.to_s
+              end
+              break
+            end
+          end
+        else
+          version = "1"
+      end
+    else
+      version = "1"
     end
     return version
   end
