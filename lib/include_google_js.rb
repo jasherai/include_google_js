@@ -7,6 +7,7 @@ module IncludeGoogleJs
   @@scriptaculous_files = ['controls','dragdrop','effects']
   @@default_google_js_libs = ['prototype','scriptaculous']
   @@google_js_to_include = []
+  @@javascript_versions = []
   
   def self.included(base) 
     base.alias_method_chain :javascript_include_tag, :google_js
@@ -17,6 +18,8 @@ module IncludeGoogleJs
     options                 = sources.extract_options!.stringify_keys
     cache                   = options.delete("cache")
     @@include_google_js     = options.delete("include_google_js") if options.include?("include_google_js") && IncludeGoogleJs.confirm_internet_connection
+    @@javascript_versions   = options.delete("versions") if options.include?("versions")
+    
     @@google_js_to_include  = []
 
     if ActionController::Base.perform_caching && cache
@@ -33,7 +36,8 @@ module IncludeGoogleJs
           <script>
           }
         @@google_js_to_include.each do |js_lib|
-          html += %Q{google.load("#{js_lib}", "1");
+          version = @@javascript_versions.has_key?(js_lib.to_sym) ? @@javascript_versions.fetch(js_lib.to_sym) : IncludeGoogleJs.get_file_version(js_lib)
+          html += %Q{google.load("#{js_lib}", "#{version}");
           }
         end
         html += %Q{</script>
@@ -119,7 +123,7 @@ module IncludeGoogleJs
           version = "1"
         when "jquery"
           version_array = []
-          file_version = "-"+file_name.split("-")[1]
+          file_version = file_name.split("-")[1].nil? ?  "" : "-"+file_name.split("-")[1]
           File.open(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file+file_version}.js")).each do |line|
             version_array = line.scan(/jquery:\W?"([\d.]+)"/x)
             break if version_array.size > 0
@@ -146,7 +150,8 @@ module IncludeGoogleJs
         else
           version = "1"
       end
-    else
+    end
+    if version == ""
       version = "1"
     end
     return version
