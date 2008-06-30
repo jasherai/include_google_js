@@ -7,7 +7,7 @@ module IncludeGoogleJs
   @@scriptaculous_files = ['controls','dragdrop','effects']
   @@default_google_js_libs = ['prototype','scriptaculous']
   @@google_js_to_include = []
-  @@javascript_versions = []
+  @@javascript_versions = Hash.new
   
   def self.included(base) 
     base.alias_method_chain :javascript_include_tag, :google_js
