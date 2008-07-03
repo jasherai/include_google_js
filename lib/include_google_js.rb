@@ -36,8 +36,8 @@ module IncludeGoogleJs
           <script>
           }
         @@google_js_to_include.each do |js_lib|
-          version = @@javascript_versions.has_key?(js_lib.to_sym) ? @@javascript_versions.fetch(js_lib.to_sym) : IncludeGoogleJs.get_file_version(js_lib)
-          html += %Q{google.load("#{js_lib}", "#{version}");
+          version = @@javascript_versions.has_key?(js_lib.split("-")[0].to_sym) ? @@javascript_versions.fetch(js_lib.split("-")[0].to_sym) : IncludeGoogleJs.get_file_version(js_lib)
+          html += %Q{google.load("#{js_lib.split("-")[0]}", "#{version}");
           }
         end
         html += %Q{</script>
@@ -77,7 +77,7 @@ module IncludeGoogleJs
     javascript_files.each do |file|
       if @@google_js_libs.include?(file.split("-")[0])
         @@google_js_to_include << file
-        IncludeGoogleJs.get_file_version(file)
+        # IncludeGoogleJs.get_file_version(file)
       end
       if @@scriptaculous_files.include?(file)
         @@google_js_to_include << 'scriptaculous' unless @@google_js_to_include.include?('scriptaculous')
