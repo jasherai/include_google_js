@@ -107,8 +107,8 @@ module IncludeGoogleJs
   end
   
   def self.get_file_version(file_name)
+    version = "1"
     if File.exist?(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, "#{file_name}.js"))
-      version = ''
       # split file_name for jquery
       file = file_name.split("-")[0]
       case file
@@ -150,9 +150,6 @@ module IncludeGoogleJs
         else
           version = "1"
       end
-    end
-    if version == ""
-      version = "1"
     end
     return version
   end
